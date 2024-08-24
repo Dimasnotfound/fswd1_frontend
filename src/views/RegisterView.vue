@@ -10,7 +10,7 @@
                 <form>
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input v-model="formData.email" type="email" class="form-control" id="username" aria-describedby="emailHelp">
+                    <input v-model="formData.username" type="text" class="form-control" id="username" aria-describedby="emailHelp">
                     <div v-for="error in v$.username.$errors" :key="error.$uid" id="nameHelp" class="form-text text-danger">*{{error.$message}}</div>
                 </div>
                 <div class="mb-3">
@@ -43,8 +43,12 @@
 <script setup>
 import router from "@/router";
 import useVuelidate from "@vuelidate/core";
-import { computed, reactive, ref } from "vue";
+import { computed, inject, reactive, ref } from "vue";
 import { required, email, sameAs, minLength, helpers } from '@vuelidate/validators'
+import { authStore } from "@/stores/auth";
+
+const auth = authStore();
+const swal = inject('$swal');
 
 const formData = reactive({
     username: '',
@@ -86,6 +90,33 @@ const methods = {
 
     register: async () => {
         await v$.value.$validate()
+
+        await auth.register(formData)
+        .then((res) => {
+            if(res.status){
+                router.push({ name: 'home' })
+                swal.fire({
+                    icon: 'success',
+                    toast: true,
+                    title: 'Register success !',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    position: 'top-end',
+                });
+            }
+        }).catch((err) => {
+            console.log(err);
+            swal.fire({
+                icon: 'error',
+                toast: true,
+                title: 'Register Failed !',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                position: 'top-end',
+            });
+        })
     }
 }
 

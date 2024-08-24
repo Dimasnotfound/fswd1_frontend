@@ -55,7 +55,35 @@ export const authStore = defineStore('auth', {
 
         register(payload){
             return new Promise((resolve, reject) => {
-                
+                let params = {
+                    name: payload.username,
+                    email: payload.email,
+                    password: payload.password
+                }
+
+                axios({
+                    method: 'POST',
+                    url: 'http://127.0.0.1:8000/api/register',
+                    headers: {
+                        "Content-Type": 'application/json'
+                    },
+                    data: JSON.stringify(params)
+                }).then((response) => {
+                    if(response.status == 201){
+                        resolve ({
+                            status: true,
+                            data: response.data.user
+                        })
+                    }else {
+                        resolve ({
+                            status: false,
+                            data: response.data
+                        })
+                    }
+                    
+                }).catch((err) => {
+                    reject(err)
+                })
             })
         }
     }

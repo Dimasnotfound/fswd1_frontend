@@ -68,7 +68,7 @@ const methods = {
         const validate = await v$.value.$validate();  
               
         if(validate){
-            await auth.login(data.value.email, data.value.password).then((response) => {
+            await auth.login(formData.email, formData.password).then((response) => {
                 router.push('/home')
                 swal.fire({
                     icon: 'success',
